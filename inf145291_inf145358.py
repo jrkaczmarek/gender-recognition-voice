@@ -18,20 +18,29 @@ def hps(signal, rate, harmony = 3):
     #obliczenie czestotliwosc (od 0 do rate)
     freqs = np.arange(0, rate, rate/signal.size)
     
+    #pierwsza polowka
+    if(freqs.size % 2 == 0):
+        spec = spec[:freqs.size//2]
+        freqs = freqs[:freqs.size//2]
+    else:
+        spec = spec[:freqs.size//2 + 1]
+        freqs = freqs[:freqs.size//2 + 1]
+        
     #dlugosc finalnego spektrum
     length = int(np.ceil(spec.size/harmony))
     
     #wyliczenie nowego spektrum i downsampling
     new_spec = spec[:length].copy()
+    freqs = freqs[:length] #finalna dlugosc czestotliwosci juz
     for i in range(2, harmony+1):
         new_spec *= spec[::i][:length]
         
     #odfiltrowanie niepotrzebnych czestotliwosci
-    for i in range(len(freqs[:length])):
+    for i in range(len(freqs)):
         if freqs[i] < 70:
             new_spec[i] = 0
         
-    return (new_spec, freqs[:length])
+    return (new_spec, freqs)
 
 def plec(file):
     #proba wczytania pliku
